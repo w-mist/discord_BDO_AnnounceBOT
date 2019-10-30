@@ -177,7 +177,7 @@ async def MakeMessage():
 			print("")
 			print(sLocalNowWithBrace + " woke up!")
 		else:
-			print(sLocalNowWithBrace + " seems no need to wait next interval. (fSleepSS=" + str(fSleepSS) + ")"
+			print(sLocalNowWithBrace + " seems no need to wait next interval. (fSleepSS=" + str(fSleepSS) + ")")
 	else:
 		print(sLocalNowWithBrace + " seems no need to wait next interval (at initial or regular time).")
 
