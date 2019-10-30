@@ -14,7 +14,7 @@ from time import ctime
 import math
 
 # チラシの裏
-s_VERSION = "1.0.1"
+s_VERSION = "1.0.2"
 s_RELDATE = "191030"
 
 # 曜日毎ボス定義
@@ -100,7 +100,7 @@ f_INTERVAL = 600		# [sec], loop interval. default=300 (600 or 300)
 s_NTPSRV1 = "ntp.nict.jp"
 s_NTPSRV2 = "ntp.jst.mfeed.ad.jp"
 s_NTPSRV3 = "time.cloudflare.com"
-s_BOTNAME = "もっちゅあ！"	##### BOTの名前を書くこと #####
+s_BOTNAME = "水を吐くフグ"	##### BOTの名前を書くこと #####
 
 client = discord.Client()
 
@@ -166,8 +166,8 @@ async def MakeMessage():
 		(fNtpTimeHH in list_FixAnnounceTimeHH and fNtpTimeMM == 0):
 		# 起動時 OR 定時に必ずsync
 		fSleepSS = (math.ceil(fNtpTimeMM/10)*10-fNtpTimeMM)*60 - fNtpTimeSS - (datetime.now().microsecond/1000000)
-#		if fSleepSS < 0:
-#			fSleepSS = f_INTERVAL + fSleepSS
+		if fSleepSS < 0:
+			fSleepSS = f_INTERVAL + fSleepSS
 		if fSleepSS >= 1:
 			print(sLocalNowWithBrace + " wait for next interval (" + str(fSleepSS) + " seconds) at tasks.loop().")
 			print(sLocalNowWithBrace + " fNtpTimeHH=" + str(fNtpTimeHH) + " fNtpTimeMM=" + str(fNtpTimeMM) \
@@ -177,9 +177,9 @@ async def MakeMessage():
 			print("")
 			print(sLocalNowWithBrace + " woke up!")
 		else:
-			print(sLocalNowWithBrace + " seems no need to wait next interval. (fSleepSS=" + str(fSleepSS) + ")")
+			print(sLocalNowWithBrace + " seems no need to wait next interval at initial or regular time. (fSleepSS=" + str(fSleepSS) + ")")
 	else:
-		print(sLocalNowWithBrace + " seems no need to wait next interval (at initial or regular time).")
+		print(sLocalNowWithBrace + " seems no need to wait next interval.")
 
 	## アナウンス時間チェック
 	bAnnounceTime = False
