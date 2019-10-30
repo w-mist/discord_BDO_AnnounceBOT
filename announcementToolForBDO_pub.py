@@ -1,7 +1,7 @@
-#####	announcementToolForBDO_pub.py					#####
-#####	- programmed by tmp (BDO In-Game family name)	#####
-#####	- distributed under GNU/GPLv3					#####
-#####	- contact: tmp OR la1n#6395 (Discord)			#####
+#####	announcementToolForBDO_pub.py			#####
+#####	- programmed by tmp (In-Game family name)	#####
+#####	- distributed under GNU/GPLv3			#####
+#####	- contact: tmp OR la1n#6395 (Discord)		#####
 
 import discord
 from discord.ext import tasks
@@ -14,8 +14,8 @@ from time import ctime
 import math
 
 # チラシの裏
-s_VERSION = "1.0.0"
-s_RELDATE = "191026"
+s_VERSION = "1.0.1"
+s_RELDATE = "191030"
 
 # 曜日毎ボス定義
 dict_Mon = {
@@ -96,7 +96,7 @@ list_FixAnnounceTimeHH = [9, 12, 14, 17, 21, 0, 3, 6]
 # 定数パラメータ
 s_TOKEN = "hogePiyoFooBar"	##### BOTのアクセストークンを"で挟んで書くこと #####
 n_CHANNEL_ID = 1234567890	##### 送信先チャンネル名のIDを数字のみで指定すること #####
-f_INTERVAL = 600			# [sec], loop interval. default=300 (600 or 300)
+f_INTERVAL = 600		# [sec], loop interval. default=300 (600 or 300)
 s_NTPSRV1 = "ntp.nict.jp"
 s_NTPSRV2 = "ntp.jst.mfeed.ad.jp"
 s_NTPSRV3 = "time.cloudflare.com"
@@ -111,7 +111,7 @@ async def on_ready():
 	print('[' + datetime.now().strftime('%H:%M:%S.%f')[:-3] + ']' + ' starting up... settings are')
 	print('username=' + str(client.user.name))
 	print('id=' + str(client.user.id))
-	print('targetChannel=' + str(n_CHANNEL_ID))
+	print('targetChannel=' + str(f_CHANNEL_ID))
 	print('interval=' + str(f_INTERVAL) + ' sec')
 	print('--')
 	sLocalNowWithBrace = '[' + datetime.now().strftime('%H:%M:%S.%f')[:-3] + ']'
@@ -129,10 +129,9 @@ async def MakeMessage():
 	try:
 		ctCurrentTime = ctime(ntp.request(s_NTPSRV1).tx_time)
 	except Exception as e1:
-		print("! an exception occured;")
+		print(sLocalNowWithBrace + "! an exception occured;")
 		print(type(e1))
 		print(e1)
-		print("")
 	else:
 		print(sLocalNowWithBrace + " ntp.request(" + s_NTPSRV1 + ") success.")
 	finally:
@@ -140,10 +139,9 @@ async def MakeMessage():
 			try:
 				ctCurrentTime = ctime(ntp.request(s_NTPSRV2).tx_time)
 			except Exception as e2:
-				print("! an exception occured;")
+				print(sLocalNowWithBrace + "! an exception occured;")
 				print(type(e2))
 				print(e2)
-				print("")
 			else:
 				print(sLocalNowWithBrace + " ntp.request(" + s_NTPSRV2 + ") success.")
 			finally:
@@ -154,7 +152,6 @@ async def MakeMessage():
 						print(sLocalNowWithBrace + " ! an exception occured;")
 						print(type(e3))
 						print(e3)
-						print("")
 						await SendMessage("えくせぷしょん！（もうだめぽ）")
 						sys.exit(-1)
 					else:
@@ -165,22 +162,24 @@ async def MakeMessage():
 	fNtpTimeHH = dtNtpTime.hour
 	fNtpTimeMM = dtNtpTime.minute
 	fNtpTimeSS = dtNtpTime.second
-	fLocalTimeMicroSS = datetime.now().microsecond
 	if fNtpTimeMM % (f_INTERVAL//60) != 0 or \
 		(fNtpTimeHH in list_FixAnnounceTimeHH and fNtpTimeMM == 0):
 		# 起動時 OR 定時に必ずsync
-		fSleepSS = (math.ceil(fNtpTimeMM/10)*10-fNtpTimeMM)*60 - fNtpTimeSS - (fLocalTimeMicroSS/1000000)
-		if fSleepSS < 0:
-			fSleepSS = f_INTERVAL + fSleepSS
-		print(sLocalNowWithBrace + " wait for next interval (" + str(fSleepSS) + " seconds) at tasks.loop().")
-		print(sLocalNowWithBrace + " fNtpTimeHH=" + str(fNtpTimeHH) + " fNtpTimeMM=" + str(fNtpTimeMM) \
-			+ " fNtpTimeSS=" + str(fNtpTimeSS) + " datetime.now().microsecond=" + str(datetime.now().microsecond))
-		await asyncio.sleep(fSleepSS)
-		sLocalNowWithBrace = '[' + datetime.now().strftime('%H:%M:%S.%f')[:-3] + ']'
-		print("")
-		print(sLocalNowWithBrace + " woke up!")
+		fSleepSS = (math.ceil(fNtpTimeMM/10)*10-fNtpTimeMM)*60 - fNtpTimeSS - (datetime.now().microsecond/1000000)
+#		if fSleepSS < 0:
+#			fSleepSS = f_INTERVAL + fSleepSS
+		if fSleepSS >= 1:
+			print(sLocalNowWithBrace + " wait for next interval (" + str(fSleepSS) + " seconds) at tasks.loop().")
+			print(sLocalNowWithBrace + " fNtpTimeHH=" + str(fNtpTimeHH) + " fNtpTimeMM=" + str(fNtpTimeMM) \
+				+ " fNtpTimeSS=" + str(fNtpTimeSS) + " datetime.now().microsecond=" + str(datetime.now().microsecond))
+			await asyncio.sleep(fSleepSS)
+			sLocalNowWithBrace = '[' + datetime.now().strftime('%H:%M:%S.%f')[:-3] + ']'
+			print("")
+			print(sLocalNowWithBrace + " woke up!")
+		else:
+			print(sLocalNowWithBrace + " seems no need to wait next interval. (fSleepSS=" + str(fSleepSS) + ")"
 	else:
-		print(sLocalNowWithBrace + " seems no need to wait next interval.")
+		print(sLocalNowWithBrace + " seems no need to wait next interval (at initial or regular time).")
 
 	## アナウンス時間チェック
 	bAnnounceTime = False
@@ -268,7 +267,11 @@ async def MakeMessage():
 	## アナウンス文字列作成
 	sPopMsg = ""
 	if fRemainingSS != -1:
-		sPopMsg = sBossName + "出現" + str(math.ceil(fRemainingSS/10)*10//60) + "分前"
+		fStrictRemainingSS = math.ceil(fRemainingSS/10)*10//60
+		fLooseRemainingSS = math.ceil(fRemainingSS/100)*100//60
+		sPopMsg = sBossName + "出現" + str(fLooseRemainingSS) + "分前"
+		if fStrictRemainingSS != fLooseRemainingSS:
+			sPopMsg += "(?)"
 
 	## 送信
 	if sPopMsg != "":
@@ -282,7 +285,7 @@ async def MakeMessage():
 ## メッセージ送信
 async def SendMessage(msg):
 	await client.wait_until_ready()
-	channel = client.get_channel(n_CHANNEL_ID)
+	channel = client.get_channel(f_CHANNEL_ID)
 	await channel.send(msg)
 
 ## BOTメッセージに応答しない処理
