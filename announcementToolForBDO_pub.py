@@ -14,7 +14,7 @@ from time import ctime
 import math
 
 # チラシの裏
-s_VERSION = "1.0.2"
+s_VERSION = "1.0.3"
 s_RELDATE = "191030"
 
 # 曜日毎ボス定義
@@ -95,7 +95,7 @@ list_FixAnnounceTimeHH = [9, 12, 14, 17, 21, 0, 3, 6]
 
 # 定数パラメータ
 s_TOKEN = "hogePiyoFooBar"	##### BOTのアクセストークンを"で挟んで書くこと #####
-n_CHANNEL_ID = 1234567890	##### 送信先チャンネル名のIDを数字のみで指定すること #####
+f_CHANNEL_ID = 1234567890	##### 送信先チャンネル名のIDを数字のみで指定すること #####
 f_INTERVAL = 600		# [sec], loop interval. default=300 (600 or 300)
 s_NTPSRV1 = "ntp.nict.jp"
 s_NTPSRV2 = "ntp.jst.mfeed.ad.jp"
